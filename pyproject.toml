@@ -1,0 +1,11 @@
+[project]
+name = "backandcourse"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.13.3",
+    "fastapi[standard]>=0.135.1",
+    "uvicorn>=0.41.0",
+]
