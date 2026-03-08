@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body, Query
 from sqlalchemy import insert, select, func
 
+from repositories.hotels import HotelsRepository
 from schemas.hotels import Hotel, HotelPATCH
 from src.api.dependencies import PaginationDep
 from src.database import async_session_maker
@@ -14,24 +15,25 @@ async def get_hotels(
     title: str | None = Query(None, description="Hotel title"),
     location: str | None = Query(None, description="Hotel location"),
 ):
-    offset = pagination.offset or 5
-    async with (async_session_maker() as session):
-        query = select(HotelsOrm)
-        if title:
-            query = query.filter(func.lower(HotelsOrm.title).contains(title.strip().lower()))
-        if location:
-            query = query.filter(func.lower(HotelsOrm.location).contains(location.strip().lower()))
-
-        query = (
-            query
-            .limit(offset)
-            .offset(offset * (pagination.page - 1))
-        )
-
-        result = await session.execute(query)
-        hotels = result.scalars().all()
-
-        return hotels
+    async with async_session_maker() as session:
+        return await HotelsRepository(session).get_all()
+    # offset = pagination.offset or 5
+    #     query = select(HotelsOrm)
+    #     if title:
+    #         query = query.filter(func.lower(HotelsOrm.title).contains(title.strip().lower()))
+    #     if location:
+    #         query = query.filter(func.lower(HotelsOrm.location).contains(location.strip().lower()))
+    #
+    #     query = (
+    #         query
+    #         .limit(offset)
+    #         .offset(offset * (pagination.page - 1))
+    #     )
+    #
+    #     result = await session.execute(query)
+    #     hotels = result.scalars().all()
+    #
+    #     return hotels
 
 
 @router.delete("/{hotel_id}")
