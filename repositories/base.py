@@ -28,11 +28,11 @@ class BaseRepository:
         return result.scalars().one()
 
 
-    async def edit(self, data: BaseModel, **filter_params) -> None:
+    async def edit(self, data: BaseModel, exclude_unset = False, **filter_params) -> None:
         update_stmt = (
             update(self.model)
             .filter_by(**filter_params)
-            .values(**data.model_dump())
+            .values(**data.model_dump(exclude_unset=exclude_unset))
         )
 
         await self.session.execute(update_stmt)
