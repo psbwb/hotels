@@ -15,25 +15,15 @@ async def get_hotels(
     title: str | None = Query(None, description="Hotel title"),
     location: str | None = Query(None, description="Hotel location"),
 ):
+    per_page = pagination.per_page or 5
     async with async_session_maker() as session:
-        return await HotelsRepository(session).get_all()
-    # offset = pagination.offset or 5
-    #     query = select(HotelsOrm)
-    #     if title:
-    #         query = query.filter(func.lower(HotelsOrm.title).contains(title.strip().lower()))
-    #     if location:
-    #         query = query.filter(func.lower(HotelsOrm.location).contains(location.strip().lower()))
-    #
-    #     query = (
-    #         query
-    #         .limit(offset)
-    #         .offset(offset * (pagination.page - 1))
-    #     )
-    #
-    #     result = await session.execute(query)
-    #     hotels = result.scalars().all()
-    #
-    #     return hotels
+        return await HotelsRepository(session).get_all(
+            title,
+            location,
+            limit=per_page,
+            offset=per_page * (pagination.page - 1)
+        )
+
 
 
 @router.delete("/{hotel_id}")
@@ -56,13 +46,12 @@ async def create_hotel(
         }
     ),
 ):
+    # TODO: use repository
     async with async_session_maker() as session:
-        add_hotel_stmt = insert(HotelsOrm).values(**hotel_data.model_dump())
-        await session.execute(add_hotel_stmt)
-        # print(add_hotel_stmt.compile(compile_kwargs={"literal_binds": True}))
+        hotel = await HotelsRepository(session).add(hotel_data)
         await session.commit()
 
-    return {"status": "ok"}
+    return {"status": "ok", "data": hotel}
 
 
 @router.put("/{hotel_id}")

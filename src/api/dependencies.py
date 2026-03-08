@@ -8,7 +8,7 @@ class PaginationParams(BaseModel):
         int | None,
         Query(1, ge=1)
     ]
-    offset: Annotated[
+    per_page: Annotated[
         int | None,
         Query(None, ge=1, le=30)
     ]
