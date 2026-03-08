@@ -6,9 +6,9 @@ from pydantic import BaseModel
 class PaginationParams(BaseModel):
     page:   Annotated[
         int | None,
-        Query(None, ge=1)
+        Query(1, ge=1)
     ]
-    offset: Annotated[
+    per_page: Annotated[
         int | None,
         Query(None, ge=1, le=30)
     ]
