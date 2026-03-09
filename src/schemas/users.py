@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 
 
-class UserRequestAdd(BaseModel):
+class UserRequest(BaseModel):
     email: EmailStr
     password: str
 
@@ -14,3 +14,6 @@ class UserAdd(BaseModel):
 class User(BaseModel):
     id: int
     email: str
+
+class UserWithHashedPassword(User):
+    hashed_password: str
